@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "ef13959d-08d5-4cba-b64d-0907e59bc417",
+		"name": "Test Zara",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "6395002"
+	},
+	"item": [
+		{
+			"name": "[GET] Obtiene el precio final",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/v1/rest/prices/final-price?date=2020-06-14 15:00:00&productId=35455&brandId=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"rest",
+						"prices",
+						"final-price"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2020-06-14 15:00:00"
+						},
+						{
+							"key": "productId",
+							"value": "35455"
+						},
+						{
+							"key": "brandId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GET] Obtiene el precio final con convention",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/v1/rest/prices/final-price-convention?date=2020-06-14 15:00:00&productId=35455&brandId=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"rest",
+						"prices",
+						"final-price-convention"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2020-06-14 15:00:00"
+						},
+						{
+							"key": "productId",
+							"value": "35455"
+						},
+						{
+							"key": "brandId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GET] Obtiene la lista completa de todos los productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8080/api/v1/rest/prices/price-list-all"
+			},
+			"response": []
+		}
+	]
+}
