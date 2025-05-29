@@ -90,30 +90,8 @@ Generación automática de API docs con:
 La aplicación utiliza una base de datos H2 en memoria que se inicializa automáticamente con:
 
 - **Esquema inicial**: Definido en `schema.sql`
-- **Datos de prueba**: Cargados desde `data.sql`
+- **Datos de prueba**: Cargados desde `schema.sql`
 - **Consola H2**: Accesible en `http://localhost:8080/h2-console` (Credenciales en `application.yml`)
-
-### Diagrama Entidad-Relación
-
-```mermaid
-erDiagram
-    BRANDS ||--o{ PRICES : has
-    BRANDS {
-        INT id PK
-        VARCHAR(50) name
-    }
-    PRICES {
-        INT id PK
-        INT brand_id FK
-        TIMESTAMP start_date
-        TIMESTAMP end_date
-        INT price_list
-        INT product_id
-        INT priority
-        DECIMAL(10,2) price
-        VARCHAR(3) curr
-    }
-```
 
 ```sql
 -- Tabla de marcas
