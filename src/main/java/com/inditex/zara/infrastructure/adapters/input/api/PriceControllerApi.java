@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface PriceControllerApi {
 
@@ -46,4 +47,17 @@ public interface PriceControllerApi {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date,
             @RequestParam @NotNull @Positive Long productId,
             @RequestParam @NotNull @Positive Integer brandId);
+
+    @Operation(
+            summary = "Obtener lista completa de precios",
+            description = "Devuelve todos los precios disponibles",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Lista de precios obtenida exitosamente",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = PriceResponse.class, type = "array")))})
+    @GetMapping("/price-list-all")
+    ResponseEntity<List<PriceResponse>> getPricesListAll();
 }
