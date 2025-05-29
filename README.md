@@ -171,7 +171,6 @@ GET localhost:8080/api/v1/rest/prices/final-price?date=2020-06-14-15.00.00&produ
 - **🔵 Application**: Orquesta casos de uso usando puertos del dominio.
 - **⚪ Infrastructure**: Adaptadores concretos (HTTP, DB, mapeadores).
 
-
 ```
 src/main/java/com/inditex/zara/
 │
@@ -240,6 +239,53 @@ src/main/java/com/inditex/zara/
 2. **En Postman**:
     - Haz clic en `Import` > Selecciona los archivos `.json`
     - Probar los endpoints con los datos de ejemplo
+
+
+# 🧪🔍 Pruebas y Cobertura con JaCoCo
+
+## ▶️ Ejecutar pruebas con cobertura
+
+```bash
+mvn clean verify
+```
+
+Este comando realiza:
+
+- **clean** 🧹  - Limpia compilaciones anteriores
+- **verify** ✅ - Ejecuta todas las pruebas y genera reportes
+
+---
+
+## 📊 Reporte de Cobertura
+
+JaCoCo genera un reporte detallado en:
+
+```
+target/site/jacoco/
+```
+
+### 📌 Abrir reporte
+
+- **macOS/Linux**:
+  ```bash
+  xdg-open target/site/jacoco/index.html
+  ```
+
+- **Windows**:
+  ```bash
+  start target/site/jacoco/index.html
+  ```
+
+---
+
+## 📈 Métricas principales
+
+| Métrica               | Emoji | Descripción                            |
+|------------------------|--------|----------------------------------------|
+| Cobertura de líneas    | 📏     | Porcentaje de líneas ejecutadas        |
+| Cobertura de ramas     | 🌿     | Decisiones lógicas cubiertas           |
+| Métodos cubiertos      | ⚙️     | Métodos con pruebas                    |
+| Complejidad            | 🧩     | Complejidad ciclomática                |
 
 ## ✉️ Contacto
 📧 **Email**: [fe.galaz@gmail.com](fe.galaz@gmail.com)  
