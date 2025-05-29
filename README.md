@@ -287,6 +287,10 @@ target/site/jacoco/
 | Métodos cubiertos      | ⚙️     | Métodos con pruebas                    |
 | Complejidad            | 🧩     | Complejidad ciclomática                |
 
+
+# Evidencia de los test 100% pasados
+![img.png](img.png)
+
 ## ✉️ Contacto
 📧 **Email**: [fe.galaz@gmail.com](fe.galaz@gmail.com)  
 👔 **LinkedIn**: [Contactar](https://www.linkedin.com/in/felipe-galaz-b7358b91/)  
