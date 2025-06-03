@@ -1,18 +1,21 @@
 package com.inditex.zara.infrastructure.exceptions;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * Mensaje de error estándar para respuestas HTTP.
+ * Proporciona información estructurada sobre errores.
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class ErrorMessage {
 
-	private int statusCode;
-	private Date timestamp;
+	private int status;
+	@Builder.Default
+	private LocalDateTime timestamp = LocalDateTime.now();
 	private String message;
-	private String description;
+	private String path;
 }

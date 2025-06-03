@@ -3,7 +3,7 @@ package com.inditex.zara.repository;
 import com.inditex.zara.domain.model.Price;
 import com.inditex.zara.infrastructure.adapters.output.persistence.jpa.PriceRepositoryAdapter;
 import com.inditex.zara.infrastructure.adapters.output.persistence.jpa.entity.PriceEntity;
-import com.inditex.zara.infrastructure.adapters.output.persistence.jpa.repository.DataPriceRepository;
+import com.inditex.zara.infrastructure.adapters.output.persistence.jpa.repository.PriceJpaRepository;
 import com.inditex.zara.infrastructure.mappers.PriceMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class PriceRepositoryAdapterUnitTest {
 
     @Mock
-    private DataPriceRepository jpaRepository;
+    private PriceJpaRepository priceJpaRepository;
 
     @Mock
     private PriceMapper priceMapper;
@@ -36,7 +36,7 @@ class PriceRepositoryAdapterUnitTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new PriceRepositoryAdapter(jpaRepository, priceMapper);
+        adapter = new PriceRepositoryAdapter(priceJpaRepository, priceMapper);
     }
 
     @Test
@@ -50,14 +50,14 @@ class PriceRepositoryAdapterUnitTest {
         Optional<PriceEntity> entity = Optional.of(new PriceEntity());
         Price price = new Price(1, startDate, endDate, 2, 35455L, 0, new BigDecimal("25.45"), "EUR");
 
-        when(jpaRepository.findFinalPriceWithJpql(brandId, productId, date)).thenReturn(entity);
+        when(priceJpaRepository.findApplicablePrice(brandId, productId, date)).thenReturn(entity);
         when(priceMapper.toDomain(any(PriceEntity.class))).thenReturn(price);
 
         Optional<Price> result = adapter.findFinalPrice(brandId, productId, date);
 
         assertTrue(result.isPresent());
         assertEquals(price, result.get());
-        verify(jpaRepository).findFinalPriceWithJpql(brandId, productId, date);
+        verify(priceJpaRepository).findApplicablePrice(brandId, productId, date);
     }
 
     @Test
@@ -71,15 +71,14 @@ class PriceRepositoryAdapterUnitTest {
 
         Price expectedPrice = new Price(1, date, date, 2, 35455L, 0, new BigDecimal("25.45"), "EUR");
 
-        when(jpaRepository.findByBrandIdAndProductIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                brandId, productId, date, date)).thenReturn(entities);
-
+        when(priceJpaRepository.findAllApplicablePrices(brandId, productId, date)).thenReturn(entities);
         when(priceMapper.toDomain(entity)).thenReturn(expectedPrice);
 
         List<Price> result = adapter.findFinalPriceWithConvention(brandId, productId, date);
 
         assertEquals(1, result.size());
         assertEquals(expectedPrice, result.getFirst());
+        verify(priceJpaRepository).findAllApplicablePrices(brandId, productId, date);
     }
 
     @Test
@@ -89,13 +88,14 @@ class PriceRepositoryAdapterUnitTest {
         LocalDateTime endDate = LocalDateTime.of(2020, 6, 14, 18, 30, 0);
         Price price = new Price(1, startDate, endDate, 2, 35455L, 0, new BigDecimal("25.45"), "EUR");
 
-        when(jpaRepository.findAll()).thenReturn(List.of(entity));
+        when(priceJpaRepository.findAll()).thenReturn(List.of(entity));
         when(priceMapper.toDomain(entity)).thenReturn(price);
 
         List<Price> result = adapter.findAll();
 
         assertEquals(1, result.size());
         assertEquals(price, result.getFirst());
+        verify(priceJpaRepository).findAll();
     }
 
 

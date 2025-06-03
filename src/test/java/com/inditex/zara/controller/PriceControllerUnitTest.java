@@ -1,6 +1,6 @@
 package com.inditex.zara.controller;
 
-import com.inditex.zara.application.services.PriceService;
+import com.inditex.zara.domain.ports.in.PriceInputPort;
 import com.inditex.zara.domain.model.Price;
 import com.inditex.zara.fixtures.PriceFixtures;
 import com.inditex.zara.infrastructure.adapters.input.rest.PriceController;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class PriceControllerUnitTest {
 
     @Mock
-    private PriceService priceService;
+    private PriceInputPort priceInputPort;
 
     @Mock
     private PriceMapper priceMapper;
@@ -35,95 +35,81 @@ class PriceControllerUnitTest {
     private PriceController priceController;
 
     @Test
-    void getFinalPriceReturnsPriceResponse() {
+    void testGetFinalPrice() {
         LocalDateTime date = LocalDateTime.of(2020, 6, 14, 15, 0, 0);
         Long productId = 35455L;
         Integer brandId = 1;
-        LocalDateTime endDate = LocalDateTime.of(2020, 6, 14, 18, 30, 0);
 
-        Price price = new Price(1, date, endDate, brandId, productId, 0, new BigDecimal("25.45"), "EUR");
+        Price mockPrice = Price.builder()
+                .brandId(brandId)
+                .productId(productId)
+                .price(new BigDecimal("25.45"))
+                .currency("EUR")
+                .build();
 
-        PriceResponse expectedResponse = PriceResponse.builder()
+        PriceResponse mockResponse = PriceResponse.builder()
                 .productId(productId)
                 .brandId(brandId)
-                .priceList(2)
-                .startDate(date)
-                .endDate(endDate)
                 .finalPrice("25.45 EUR")
                 .build();
 
-        when(priceService.getFinalPrice(date, productId, brandId)).thenReturn(price);
-        when(priceMapper.toDto(price)).thenReturn(expectedResponse);
+        when(priceInputPort.getFinalPrice(date, productId, brandId)).thenReturn(mockPrice);
+        when(priceMapper.toDto(mockPrice)).thenReturn(mockResponse);
 
-        ResponseEntity<PriceResponse> result = priceController.getFinalPrice(date, productId, brandId);
+        ResponseEntity<PriceResponse> response = priceController.getFinalPrice(date, productId, brandId);
 
-        assertEquals(expectedResponse, result.getBody());
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-
-        verify(priceService).getFinalPrice(date, productId, brandId);
-        verify(priceMapper).toDto(price);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockResponse, response.getBody());
+        verify(priceInputPort).getFinalPrice(date, productId, brandId);
+        verify(priceMapper).toDto(mockPrice);
     }
 
     @Test
-    void getFinalPriceWithConventionReturnsPriceResponse() {
+    void testGetFinalPriceWithConvention() {
         LocalDateTime date = LocalDateTime.of(2020, 6, 14, 15, 0, 0);
         Long productId = 35455L;
         Integer brandId = 1;
-        LocalDateTime endDate = LocalDateTime.of(2020, 6, 14, 18, 30, 0);
 
-        Price price = new Price(1, date, endDate, brandId, productId, 0, new BigDecimal("25.45"), "EUR");
+        Price mockPrice = Price.builder()
+                .brandId(brandId)
+                .productId(productId)
+                .price(new BigDecimal("25.45"))
+                .currency("EUR")
+                .build();
 
-        PriceResponse expectedResponse = PriceResponse.builder()
+        PriceResponse mockResponse = PriceResponse.builder()
                 .productId(productId)
                 .brandId(brandId)
-                .priceList(2)
-                .startDate(date)
-                .endDate(endDate)
                 .finalPrice("25.45 EUR")
                 .build();
 
-        when(priceService.getFinalPriceWithConvention(date, productId, brandId)).thenReturn(price);
-        when(priceMapper.toDto(price)).thenReturn(expectedResponse);
+        when(priceInputPort.getFinalPriceWithConvention(date, productId, brandId)).thenReturn(mockPrice);
+        when(priceMapper.toDto(mockPrice)).thenReturn(mockResponse);
 
-        ResponseEntity<PriceResponse> result = priceController.getFinalPriceWithConvention(date, productId, brandId);
+        ResponseEntity<PriceResponse> response = priceController.getFinalPriceWithConvention(date, productId, brandId);
 
-        assertEquals(expectedResponse, result.getBody());
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-
-        verify(priceService).getFinalPriceWithConvention(date, productId, brandId);
-        verify(priceMapper).toDto(price);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockResponse, response.getBody());
+        verify(priceInputPort).getFinalPriceWithConvention(date, productId, brandId);
+        verify(priceMapper).toDto(mockPrice);
     }
 
     @Test
-    void getPricesListAllReturnsPriceResponse() {
-        LocalDateTime date = LocalDateTime.of(2020, 6, 14, 15, 0, 0);
-        Long productId = 35455L;
-        Integer brandId = 1;
-        LocalDateTime endDate = LocalDateTime.of(2020, 6, 14, 18, 30, 0);
-
-        List<Price> price = PriceFixtures.getPricesFixtures();
-
-        List<PriceResponse> expectedResponse = List.of(
-                PriceResponse.builder()
-                        .productId(productId)
-                        .brandId(brandId)
-                        .priceList(2)
-                        .startDate(date)
-                        .endDate(endDate)
-                        .finalPrice("25.45 EUR")
-                        .build()
+    void testGetPricesListAll() {
+        List<Price> mockPrices = PriceFixtures.getPricesFixtures();
+        List<PriceResponse> mockResponses = List.of(
+                PriceResponse.builder().finalPrice("19.99 EUR").build(),
+                PriceResponse.builder().finalPrice("29.99 EUR").build()
         );
 
-        when(priceService.getPricesListAll()).thenReturn(price);
-        when(priceMapper.toDto(price)).thenReturn(expectedResponse);
+        when(priceInputPort.getAllPrices()).thenReturn(mockPrices);
+        when(priceMapper.toDto(mockPrices)).thenReturn(mockResponses);
 
-        ResponseEntity<List<PriceResponse>> result = priceController.getPricesListAll();
+        ResponseEntity<List<PriceResponse>> response = priceController.getPricesListAll();
 
-        assertEquals(expectedResponse, result.getBody());
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-
-        verify(priceService).getPricesListAll();
-        verify(priceMapper).toDto(price);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockResponses, response.getBody());
+        verify(priceInputPort).getAllPrices();
+        verify(priceMapper).toDto(mockPrices);
     }
-
 }
