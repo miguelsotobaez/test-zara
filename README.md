@@ -4,10 +4,9 @@ Microservicio Spring Boot que determina el precio final de productos aplicando r
 
 # 🚀 Quick Start
 
-
 ### 1. Clonar repositorio
 ```bash
-git clone [repo-url] && cd zara-pricing-api
+git clone https://github.com/miguelsotobaez/test-zara.git && cd test-zara
 ```
 
 ### 2. Iniciar la aplicación (requiere Maven 3.8+ y Java 21)
@@ -164,82 +163,59 @@ GET localhost:8080/api/v1/rest/prices/final-price?date=2020-06-14-15.00.00&produ
 }
 ```
 
-## 🏗️ Arquitectura Hexagonal del Proyecto
+## 🏗️ Arquitectura Hexagonal Mejorada
 
-**Leyenda**:
-- **🟢 Domain**: Objetos y reglas de negocio puros (sin frameworks).
-- **🔵 Application**: Orquesta casos de uso usando puertos del dominio.
-- **⚪ Infrastructure**: Adaptadores concretos (HTTP, DB, mapeadores).
+La aplicación sigue una arquitectura hexagonal (ports & adapters) con las siguientes mejoras:
 
+### 🎯 Capas Principales
+
+1. **🟢 Dominio (Core)**
+   - `Price`: Entidad principal con reglas de negocio
+   - `PriceDomainService`: Servicio de dominio para lógica de negocio pura
+   - `PriceNotFoundException`: Excepción de dominio
+   - Puertos de entrada/salida que definen contratos
+
+2. **🔵 Aplicación**
+   - `PriceService`: Puerto de entrada principal
+   - `PriceServiceImpl`: Implementación que orquesta casos de uso
+   - Manejo de transacciones y coordinación
+
+3. **⚪ Infraestructura**
+   - **API REST**:
+     - `PriceController`: Adaptador de entrada REST
+     - `PriceControllerApi`: Contrato OpenAPI
+   - **Persistencia**:
+     - `PriceJpaRepository`: Repositorio Spring Data JPA
+     - `PriceRepositoryAdapter`: Adaptador del puerto de salida
+   - **Configuración**:
+     - `WebConfig`: Manejo flexible de formatos de fecha
+     - Soporte para múltiples formatos: ISO, personalizado y alternativo
+
+### 🔄 Flujo de Datos
 ```
-src/main/java/com/inditex/zara/
-│
-├── application/                          # Capa de aplicación (casos de uso)
-│   ├── services/
-│   │   ├── PriceService.java             <<Puerto de entrada>> (Interfaz para la lógica de negocio)
-│   │   └── impl/PriceServiceImpl.java    <<Servicio>> (Implementación con reglas de negocio)
-│
-├── domain/                               # Capa de dominio (núcleo del sistema)
-│   ├── model/
-│   │   └── Price.java                    <<Entidad>> (Objeto de negocio con lógica central)
-│   └── ports/
-│       ├── in/                           <<Puertos de entrada>> (Interfaces para drivers)
-│       └── out/PriceOutputPort.java      <<Puerto de salida>> (Interfaz para persistencia)
-│
-├── infrastructure/                       # Capa de infraestructura (detalles técnicos)
-│   ├── adapters/
-│   │   ├── input/                        # Adaptadores primarios (controladores)
-│   │   │   ├── api/PriceControllerApi.java       <<REST API>> (Endpoints formales)
-│   │   │   └── rest/PriceController.java         <<REST>> (Manejo de HTTP)
-│   │   └── output/                       # Adaptadores secundarios (persistencia)
-│   │       └── persistence/jpa/
-│   │           ├── entity/PriceEntity.java       <<JPA>> (Modelo de base de datos)
-│   │           ├── repository/DataPriceRepository.java  <<JPA Repository>> (Operaciones CRUD)
-│   │           └── PriceRepositoryAdapter.java   <<Adaptador>> (Convierte Dominio↔JPA)
-│   │
-│   ├── configs/                          # Configuraciones técnicas
-│   │   ├── JacksonConfig.java            <<JSON>> (Serialización personalizada)
-│   │   └── SwaggerConfig.java            <<API Docs>> (UI interactiva)
-│   │
-│   ├── dto/PriceResponse.java            <<DTO>> (Estructura de respuesta API)
-│   │
-│   ├── exceptions/                       # Manejo de errores
-│   │   ├── ControllerExceptionHandler.java <<Global>> (Captura excepciones HTTP)
-│   │   ├── ErrorMessage.java             <<DTO>> (Formato de errores)
-│   │   └── PriceNotFoundException.java   <<Custom>> (Error específico)
-│   │
-│   └── mappers/PriceMapper.java          <<Mapper>> (Conversiones Dominio↔DTO)
-│
-└── resources/                            # Recursos externos
-    ├── application.yml                   <<Config>> (Propiedades: BD, logs, etc.)
-    └── schema.sql                        <<DB>> (Esquema inicial de tablas) 
+[HTTP Request] → Controller → Application Service → Domain Service → Repository
+                     ↑            ↑                      ↑              ↑
+                  Adapters     Ports                  Domain         Adapters
 ```
 
+### ✨ Mejoras Implementadas
 
-## 🔍 Documentación de APIs
+1. **Simplificación de Formatos de Fecha**
+   - Soporte para 3 formatos principales:
+     - `yyyy-MM-dd HH:mm:ss` (estándar)
+     - `yyyy-MM-dd-HH.mm.ss` (alternativo)
+     - ISO_LOCAL_DATE_TIME (formato ISO)
+   - Mensajes de error mejorados en español
 
-📌 Interfaz Swagger UI: http://localhost:8080/swagger-ui.html
+2. **Separación Clara de Responsabilidades**
+   - Lógica de negocio encapsulada en el dominio
+   - Adaptadores desacoplados mediante puertos
+   - Manejo de errores centralizado
 
-📌 Esquema OpenAPI JSON: http://localhost:8080/v3/api-docs
-
-## 🚀 Colección de Postman
-
-Hemos incluido una colección de Postman en el proyecto para facilitar las pruebas de la API. Puedes importarla directamente a tu cliente de Postman.
-
-### 📂 Estructura de archivos
-```
-src/main/java/com/inditex/zara/
-│
-├── resources/                                  # Recursos externos
-│    ├── Test Zara.postman_collection.json      # Colección con todos los endpoints
-```
-
-### 📥 Cómo importar
-1. **Descarga los archivos** desde la ruta `resources/postman/`
-2. **En Postman**:
-    - Haz clic en `Import` > Selecciona los archivos `.json`
-    - Probar los endpoints con los datos de ejemplo
-
+3. **Testing Robusto**
+   - Pruebas unitarias para cada capa
+   - Cobertura completa de casos de uso
+   - Tests de integración para flujos principales
 
 # 🧪🔍 Pruebas y Cobertura con JaCoCo
 

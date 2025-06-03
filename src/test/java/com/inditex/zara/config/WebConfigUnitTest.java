@@ -60,32 +60,6 @@ class WebConfigUnitTest {
     }
 
     @Test
-    void testConvertWithoutSeconds() {
-        // Given
-        String dateString = "2020-06-14 15:00";
-        LocalDateTime expected = LocalDateTime.of(2020, 6, 14, 15, 0, 0);
-
-        // When
-        LocalDateTime result = converter.convert(dateString);
-
-        // Then
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void testConvertAlternativeFormatWithoutSeconds() {
-        // Given
-        String dateString = "2020-06-14-15.00";
-        LocalDateTime expected = LocalDateTime.of(2020, 6, 14, 15, 0, 0);
-
-        // When
-        LocalDateTime result = converter.convert(dateString);
-
-        // Then
-        assertEquals(expected, result);
-    }
-
-    @Test
     void testConvertInvalidFormat() {
         // Given
         String dateString = "invalid-date-format";
@@ -96,8 +70,8 @@ class WebConfigUnitTest {
                 () -> converter.convert(dateString)
         );
         
-        assertTrue(exception.getMessage().contains("Unable to parse date"));
-        assertTrue(exception.getMessage().contains("Expected formats"));
+        assertTrue(exception.getMessage().contains("Formato de fecha inválido"));
+        assertTrue(exception.getMessage().contains("Use alguno de estos formatos"));
     }
 
     @Test
@@ -111,7 +85,7 @@ class WebConfigUnitTest {
                 () -> converter.convert(dateString)
         );
         
-        assertTrue(exception.getMessage().contains("Unable to parse date"));
+        assertTrue(exception.getMessage().contains("Formato de fecha inválido"));
     }
 
     @Test
@@ -121,5 +95,19 @@ class WebConfigUnitTest {
                 NullPointerException.class,
                 () -> converter.convert(null)
         );
+    }
+
+    @Test
+    void testConvertUnsupportedFormat() {
+        // Given
+        String dateString = "2020/06/14 15:00:00";
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> converter.convert(dateString)
+        );
+        
+        assertTrue(exception.getMessage().contains("Formato de fecha inválido"));
     }
 } 
